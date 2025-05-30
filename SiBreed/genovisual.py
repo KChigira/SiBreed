@@ -31,7 +31,7 @@ class GenoVisual(object):
         parent_list = []
         sample_num = 0
         for f in files_hap_1:
-            f_stem = ''.join(f.split('_')[:-1])
+            f_stem = '_'.join(f.split('_')[:-1])
             matched = [s for s in files_hap_2 if f_stem + '_2.hap' in s]
             if len(matched) == 1:
                 parent_list.append(['{}/{}'.format(self.dir, f_stem), self.char_1, self.out])

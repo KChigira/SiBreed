@@ -16,6 +16,20 @@ def readmap(filename):
         sys.exit(1) 
     return map
 
+def readqtl(filename):
+    #Read map file
+    with open(filename, 'r') as f:
+        map = list(csv.reader(f, delimiter='\t'))
+
+    #Check format
+    each_len = [len(v) for v in map]
+    if max(each_len) != 5 or min(each_len) != 5:
+        print(time_stamp(),
+            'Input map file is malformatted.',
+            flush=True)
+        sys.exit(1) 
+    return map
+
 def readhap(filename):
     output = []
     chrom = []

@@ -49,8 +49,10 @@ class Selfing(object):
                     num_str = '{:01}'.format(i+1)
                 elif self.num < 100:
                     num_str = '{:02}'.format(i+1)
-                else:
+                elif self.num < 1000:
                     num_str = '{:03}'.format(i+1)
+                else:
+                    num_str = '{:04}'.format(i+1)
                 stem = '{}-{}'.format(stem_list[h], num_str)
                 one = [self.map, parent_list[h], parent_list[h], 
                        stem, self.seed, self.out]

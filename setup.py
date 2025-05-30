@@ -22,6 +22,7 @@ setup(name='SiBreed',
             'genostat = SiBreed.genostat:main',
             'genovisual = SiBreed.genovisual:main',
             'genomap = SiBreed.genomap:main',
+            'phenotype = SiBreed.phenotype:main',
             ]
       }
     )

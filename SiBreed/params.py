@@ -25,6 +25,9 @@ class Params(object):
             parser = self.genovisual_options()
         elif self.program_name == 'genomap':
             parser = self.genomap_options()
+        elif self.program_name == 'phenotype':
+            parser = self.phenotype_options()
+
 
         if len(sys.argv) == 1:
             args = parser.parse_args(['-h'])
@@ -190,7 +193,7 @@ class Params(object):
                             action='store',
                             default=1,
                             type=int,
-                            help=('Number of children. Default: 1. Max: 999.\n'
+                            help=('Number of children. Default: 1. Max: 9999.\n'
                                   'Please be careful not to be too much\n'
                                   'when designated directory have many haploid files.\n'),
                             metavar='')
@@ -447,6 +450,69 @@ class Params(object):
                             version='%(prog)s {}'.format(__version__))
         return parser
 
+    def phenotype_options(self):
+        parser = argparse.ArgumentParser(description='SiBreed version {}'.format(__version__),
+                                         formatter_class=argparse.RawTextHelpFormatter)
+        parser.usage = ('phenotype -q <TSV file showing QTLs>\n'
+                        '          -d <Directory containing haploid files>\n'
+                        '          ... \n')
+
+        # set options
+        parser.add_argument('-q', '--qtl',
+                            action='store',
+                            required=True,
+                            type=str,
+                            help=('TSV file showing QTLs.\n'
+                                  'This file must formatted properly.\n'),
+                            metavar='')
+        
+        parser.add_argument('-d', '--directory',
+                            action='store',
+                            required=True,
+                            type=str,
+                            help=('Directory containing haploid files.\n'),
+                            metavar='')
+        
+        parser.add_argument('--sub',
+                            action='store',
+                            default='pheno_1',
+                            type=str,
+                            help='Subscript to identify different analysis.\n',
+                            metavar='')
+
+        parser.add_argument('--center',
+                            action='store',
+                            default=100.0,
+                            type=float,
+                            help='Standard phenotypic value. default: 100.\n',
+                            metavar='')
+        
+        parser.add_argument('--error',
+                            action='store',
+                            default=0.0,
+                            type=float,
+                            help='Variance of error of phenotypic value. default: 0.0.\n',
+                            metavar='')
+
+        parser.add_argument('-s', '--seed',
+                            action='store',
+                            default=1,
+                            type=int,
+                            help='Seed number for reproducibility of random errors.\n',
+                            metavar='')
+
+        parser.add_argument('--cpu',
+                            action='store',
+                            default=1,
+                            type=int,
+                            help='Number of threads to use\n',
+                            metavar='')
+        
+        parser.add_argument('-v', '--version',
+                            action='version',
+                            version='%(prog)s {}'.format(__version__))
+        return parser
+
     def parents_check_args(self, args):
         self.check_file_existance(args.map)
         self.check_dir_absent(args.out)
@@ -469,7 +535,7 @@ class Params(object):
         self.check_file_existance(args.map)
         self.check_dir_existance(args.parent_directory)
         self.check_dir_absent(args.out)
-        if args.num <= 0 or args.num > 999:
+        if args.num <= 0 or args.num > 9999:
             sys.stderr.write('Error. Number of children is invalid.\n')
             sys.exit(1)
 
@@ -489,7 +555,7 @@ class Params(object):
         self.check_dir_existance(args.male_parents_directory)
         self.check_dir_absent(args.out)
         if args.num <= 0 or args.num > 999:
-            sys.stderr.write('Error. Number of children is invalid.\n')
+            sys.stderr.write('Error. Variance of error is invalid.\n')
             sys.exit(1)
 
     def genostat_check_args(self, args):
@@ -503,6 +569,14 @@ class Params(object):
     def genomap_check_args(self, args):
         self.check_dir_existance(args.directory)
         self.check_valid_char(args.character)
+
+    def phenotype_check_args(self, args):
+        self.check_file_existance(args.qtl)
+        self.check_dir_existance(args.directory)
+        self.check_dir_absent('{}_{}'.format(args.directory, args.sub))
+        if args.error < 0:
+            sys.stderr.write('Error. Number of children is invalid.\n')
+            sys.exit(1)
 
     def check_file_existance(self, file):
         if not(os.path.isfile(file)):
